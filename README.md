@@ -1,6 +1,4 @@
-# jump2digital-hackato
-
-# README for `jump2digital-hackato` Repository
+# `jump2digital-hackato` Repository
 
 Welcome to the `jump2digital-hackato` repository! This is the database component of an application dedicated to monitoring touristic activity in Barcelona. Our aim is to provide real-time information about high-concurrency tourist spots and monuments in the city, helping to enhance the experience for both visitors and local businesses.
 
