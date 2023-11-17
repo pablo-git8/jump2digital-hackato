@@ -4,9 +4,7 @@ import pandas as pd
 import time
 import os
 from supabase import create_client
-
-SUPA_KEY = os.environ.get('SUPA_KEY_J2D')
-URL = os.environ.get('URL_J2D')
+from datetime import datetime
 
 # Define your points 'a' and 'b'
 a = (41.375715, 2.090579) 
@@ -46,11 +44,12 @@ def generate_random_point(a, b):
 def main():
 
     # Supabase setup
-    supabase_url = URL  
-    supabase_key = SUPA_KEY
-    supabase = create_client(supabase_url, supabase_key)
+    supabase_url = os.environ.get('URL_J2D')
+    supabase_key = os.environ.get('SUPA_KEY_J2D')
 
-    user_init_pos_df = pd.DataFrame([generate_random_point(a, b) for _ in range(500)])
+    supabase = create_client(supabase_url, supabase_key)
+    
+    user_init_pos_df = pd.DataFrame([generate_random_point(a, b) for _ in range(200)])
     user_init_pos_df.reset_index(inplace=True)
     user_init_pos_df.rename(columns={'index': 'id'}, inplace=True)
 
@@ -64,9 +63,16 @@ def main():
 
             # Update data in the database
             for row in user_mov_pos:
-                #response = supabase.table("user").upsert(row, on_conflict="id").execute()
-                #print("Data updated:", response)
-                print(row)
+                response = supabase.table("user").upsert(row, on_conflict="id").execute()
+                
+                trajectory_data = {
+                    'user_id': row['id'],
+                    'latitude': row['lat'],
+                    'longitude': row['lon'],
+                    'timestamp': datetime.now().isoformat()
+                }
+
+                response = supabase.table("user_trajectory").insert(trajectory_data).execute()
 
             user_init_pos_df = user_mov_df.copy()
 
